@@ -1,0 +1,52 @@
+version: '2'
+services:
+  #Mysql database
+  mysql:
+    image: mysql
+    container_name: app-database
+    environment:
+      - MYSQL_ROOT_PASSWORD=makhlouf
+      - MYSQL_USER=makhlouf
+      - MYSQL_PASSWORD=makhlouf
+      - MYSQL_DATABASE=app-dev
+    expose:
+      - 3306
+    restart: always
+    ports:
+      - 3306:3306
+
+  #Phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    depends_on:
+      - mysql
+    ports:
+      - '8001:80'
+    environment:
+      - PMA_HOST=app-database
+      - PMA_PORT= 3306
+    volumes:
+      - /sessions
+  #App
+  app-api:
+    image: app-api
+    container_name: app-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    command: yarn start:dev
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '8000:8000'
+
+volumes:
+  mysql_master_data:
+    driver: local

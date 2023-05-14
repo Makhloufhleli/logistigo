@@ -1,0 +1,40 @@
+version: '2'
+services:
+  #Mysql database
+  mysql:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=makhlouf
+      - MYSQL_HOST=localhost
+      - MYSQL_USER=makhlouf
+      - MYSQL_PASSWORD=makhlouf
+      - MYSQL_DATABASE=chat-app-prod
+    expose:
+      - 3306
+    restart: always
+    ports:
+      - 3306:3306
+    container_name: chat-app-database
+
+  #App
+  app:
+    image: chat-app-prod
+    container_name: chat-app-prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    command: yarn start:prod
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '8000:8000'
+
+volumes:
+  mysql_master_data:
+    driver: local
