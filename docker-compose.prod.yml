@@ -1,30 +1,34 @@
 version: '2'
 services:
-  #Mysql database
+  #Postgres database
   mysql:
     image: mysql
+    container_name: mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=makhlouf
-      - MYSQL_HOST=localhost
-      - MYSQL_USER=makhlouf
-      - MYSQL_PASSWORD=makhlouf
-      - MYSQL_DATABASE=chat-app-prod
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_HOST=${DB_HOST}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
     expose:
       - 3306
     restart: always
     ports:
       - 3306:3306
-    container_name: chat-app-database
+    volumes:
+      - mysql:/var/lib/mysql/data
+    networks:
+      - backend
 
   #App
   app:
-    image: chat-app-prod
-    container_name: chat-app-prod
+    image: logistigo-api-prod
+    container_name: logistigo-api-prod
     build:
       context: .
       dockerfile: Dockerfile
-      target: development
-    command: yarn start:prod
+      target: production
+    command: yarn run:prod
     env_file:
       - .env
     depends_on:
@@ -34,7 +38,29 @@ services:
       - /usr/src/app/node_modules
     ports:
       - '8000:8000'
-
+    networks:
+      - backend
+  #Adminer
+  adminer:
+    image: adminer
+    container_name: adminer
+    depends_on:
+      - mysql
+    ports:
+      - '8083:8080'
+    restart: always
+    volumes:
+      - mysql:/data
+    networks:
+      - backend
+#Volumes
 volumes:
-  mysql_master_data:
+  postgres:
     driver: local
+  mysql:
+    driver: local
+
+#Networks
+networks:
+  backend:
+    driver: bridge

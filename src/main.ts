@@ -1,5 +1,4 @@
-import { AppModule } from '@app/AppModule';
-import { SwaggerSetupService } from '@app/SwaggerSetupService';
+import { AppModule } from '@app/app.module';
 import { globalVariables } from '@app/common/global.variables';
 import { environmentConstants } from '@app/constants/environment.constants';
 import {
@@ -7,6 +6,7 @@ import {
   HttpExceptionFilter,
   ValidationExceptionFilter,
 } from '@app/exceptions';
+import { SwaggerSetupService } from '@app/swagger-setup';
 import {
   ClassSerializerInterceptor,
   HttpStatus,
@@ -31,7 +31,7 @@ class Application {
         transformOptions: {
           enableImplicitConversion: true,
         },
-
+        stopAtFirstError: false,
         errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         transform: true,
         dismissDefaultMessages: true,

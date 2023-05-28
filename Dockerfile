@@ -1,28 +1,34 @@
-FROM node:alpine As development
+#--< build image for development >--
 
+FROM node:alpine As development
+# Install pm2-runtime globally
+RUN npm install pm2 -g
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY package*.json yarn.lock tsconfig.json ./
 
-RUN yarn install
+COPY ./src ./src
 
-COPY . .
+RUN ls -a
 
-RUN yarn build
+RUN yarn install --pure-lockfile && yarn build
+# CMD ["yarn", "run", "start:dev"]
+
+
+#--< build image for production >--
 
 FROM node:alpine as production
-
+# Install pm2-runtime globally
+RUN npm install pm2 -g
 ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
 
-WORKDIR /usr/src/app
+WORKDIR /usr/prod/app
 
-COPY package*.json ./
+ENV NODE_ENV=production
 
-RUN yarn install --only=production
+COPY package*.json yarn.lock ./
 
-COPY . .
+RUN yarn install --production --pure-lockfile
+
 
 COPY --from=development /usr/src/app/dist ./dist
-
-CMD ["node", "dist/main"]
