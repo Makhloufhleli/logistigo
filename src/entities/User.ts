@@ -1,47 +1,46 @@
+import { EmailField, EnumField, StringField } from '@app/decorators/fields.decorator';
 import { Company, Session } from '@app/entities';
 import { UserRoles } from '@app/enums';
+import { AbstractEntity } from '@app/shared/abstract.entity';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn,
   TableInheritance,
-  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'type' } })
-export class User {
-  @PrimaryGeneratedColumn()
-  id!: number;
-
+export class User extends AbstractEntity {
   @Column({ unique: true })
+  @EmailField({ swagger: true, required: true, example: 'foulen@email.com' })
   email!: string;
 
-  @Exclude()
+  @Exclude({ toPlainOnly: true })
   @Column('varchar', {
-    select: false,
     nullable: true,
     length: 128,
   })
+  @StringField({ swagger: true, required: true, example: 'User password' })
   password: string;
 
   @Column('varchar', {
     nullable: true,
   })
+  @StringField({ swagger: true, required: true, example: 'User photo' })
   photo: string;
 
   @Column('varchar', {
     nullable: true,
   })
+  @StringField({ swagger: true, required: true, example: 'User address' })
   address: string;
 
   @Column({
@@ -49,35 +48,25 @@ export class User {
     enum: UserRoles,
     type: 'enum',
   })
+  @EnumField(() => UserRoles, {
+    swagger: true,
+    required: true,
+    examples: [UserRoles.USER, UserRoles.ADMIN],
+    example: UserRoles.ADMIN,
+    default: UserRoles.ADMIN,
+  })
   role!: UserRoles;
 
   @OneToMany(() => Session, (session) => session.user)
   sessions: Array<Session>;
 
   @OneToOne(() => Company, (company) => company.owner, { nullable: true })
-  companyOwner: Company;
+  @JoinColumn({ name: 'owned_company_Id' })
+  ownedCompany: Company;
 
   @ManyToOne(() => Company, (company) => company.employees, { nullable: true })
-  companyEmployee: Company;
-
-  @Exclude({ toPlainOnly: true })
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-  })
-  createdAt: Date;
-
-  @Exclude({ toPlainOnly: true })
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    onUpdate: 'CURRENT_TIMESTAMP(6)',
-  })
-  updatedAt: Date;
-
-  @Exclude({ toPlainOnly: true })
-  @DeleteDateColumn()
-  deletedAt!: Date;
+  @JoinColumn({ name: 'employing_company_Id' })
+  employingCompany: Company;
 
   @BeforeUpdate()
   @BeforeInsert()

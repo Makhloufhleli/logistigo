@@ -1,4 +1,4 @@
-import { EnvironmentSchema } from '@app/common';
+import { EnvironmentSchema } from '@app/common/validations/EnvironmentValidationSchema';
 import { environmentConstants } from '@app/constants/environment.constants';
 import { entities } from '@app/entities';
 import { Module } from '@nestjs/common';

@@ -116,6 +116,6 @@ export class BaseExceptionFilter implements ExceptionFilter {
     response.status(statusCode).json({
       statusCode,
       message: exception.message || defaultMessage,
-      ...(this.environment === 'development' && { stack }),
+      ...(this.environment === 'development' && { stack: stack.split('\n').map((s) => s.trim()) }),
     });
 }
