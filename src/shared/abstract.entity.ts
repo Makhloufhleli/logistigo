@@ -5,22 +5,20 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Exclude } from 'class-transformer';
-import { IsEmpty } from 'class-validator';
+import { AutoMap } from '@automapper/classes';
 
 export abstract class AbstractEntity {
   @PrimaryGeneratedColumn()
-  @IsEmpty({ always: true })
+  @AutoMap()
   id: number;
 
-  @Exclude({ toPlainOnly: true })
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
+  @AutoMap()
   createdAt: Date;
 
-  @Exclude({ toPlainOnly: true })
   @UpdateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
@@ -28,7 +26,6 @@ export abstract class AbstractEntity {
   })
   updatedAt: Date;
 
-  @Exclude({ toPlainOnly: true })
   @DeleteDateColumn()
   deletedAt!: Date;
 }
