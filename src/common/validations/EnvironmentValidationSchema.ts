@@ -15,4 +15,9 @@ export const EnvironmentSchema = JOI.object({
   [environment.ACCESS_TOKEN_TIME_TO_LIVE]: JOI.string().required(),
   [environment.REFRESH_TOKEN_SECRET]: JOI.string().required(),
   [environment.REFRESH_TOKEN_TIME_TO_LIVE]: JOI.string().required(),
+  [environment.SMTP_HOST]: JOI.string().required(),
+  [environment.SMTP_PORT]: JOI.string().required(),
+  [environment.SMTP_USER]: JOI.string().required(),
+  [environment.SMTP_PASSWORD]: JOI.string().required(),
+  [environment.DEFAULT_FROM_EMAIL]: JOI.string().required(),
 });

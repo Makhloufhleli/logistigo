@@ -90,4 +90,39 @@ export class AuthService implements IAuthService {
       throw error;
     }
   }
+
+  async generatePassword(): Promise<string> {
+    const characters =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[{]}|;:,<.>/?';
+    let password = '';
+
+    // Generate the required characters
+    password += await this.getRandomCharacter('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    password += await this.getRandomCharacter('0123456789');
+    password += await this.getRandomCharacter('!@#$%^&*()-_=+[{]}|;:,<.>/?');
+
+    // Fill the remaining characters randomly
+    for (let i = 0; i < 5; i++) {
+      password += await this.getRandomCharacter(characters);
+    }
+
+    // Shuffle the password to ensure randomness
+    password = await this.shuffleString(password);
+
+    return password;
+  }
+
+  private async getRandomCharacter(characters: string) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    return characters[randomIndex];
+  }
+
+  private async shuffleString(string: string) {
+    const array = string.split('');
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array.join('');
+  }
 }

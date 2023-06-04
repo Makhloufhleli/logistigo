@@ -23,7 +23,7 @@ class Application {
   }
   async bootstrap() {
     const app = await NestFactory.create(AppModule);
-    useContainer(app.select(AppModule), { fallbackOnErrors: true });
+    useContainer(app.select(AppModule), { fallbackOnErrors: true, fallback: true });
     app.setGlobalPrefix(globalVariables.api.globalPrefix);
     app.useGlobalPipes(
       new ValidationPipe({

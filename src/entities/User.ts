@@ -1,7 +1,7 @@
-import { EmailField, EnumField, StringField } from '@app/decorators/fields.decorator';
 import { Company, Session } from '@app/entities';
 import { UserRoles } from '@app/enums';
 import { AbstractEntity } from '@app/shared/abstract.entity';
+import { AutoMap } from '@automapper/classes';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 import {
@@ -19,8 +19,22 @@ import {
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 export class User extends AbstractEntity {
+  @Column('varchar', {
+    nullable: true,
+    length: 128,
+  })
+  @AutoMap()
+  firstName: string;
+
+  @Column('varchar', {
+    nullable: true,
+    length: 128,
+  })
+  @AutoMap()
+  lastName: string;
+
   @Column({ unique: true })
-  @EmailField({ swagger: true, required: true, example: 'foulen@email.com' })
+  @AutoMap()
   email!: string;
 
   @Exclude({ toPlainOnly: true })
@@ -28,19 +42,19 @@ export class User extends AbstractEntity {
     nullable: true,
     length: 128,
   })
-  @StringField({ swagger: true, required: true, example: 'User password' })
+  @AutoMap()
   password: string;
 
   @Column('varchar', {
     nullable: true,
   })
-  @StringField({ swagger: true, required: true, example: 'User photo' })
+  @AutoMap()
   photo: string;
 
   @Column('varchar', {
     nullable: true,
   })
-  @StringField({ swagger: true, required: true, example: 'User address' })
+  @AutoMap()
   address: string;
 
   @Column({
@@ -48,13 +62,7 @@ export class User extends AbstractEntity {
     enum: UserRoles,
     type: 'enum',
   })
-  @EnumField(() => UserRoles, {
-    swagger: true,
-    required: true,
-    examples: [UserRoles.USER, UserRoles.ADMIN],
-    example: UserRoles.ADMIN,
-    default: UserRoles.ADMIN,
-  })
+  @AutoMap()
   role!: UserRoles;
 
   @OneToMany(() => Session, (session) => session.user)
@@ -62,10 +70,12 @@ export class User extends AbstractEntity {
 
   @OneToOne(() => Company, (company) => company.owner, { nullable: true })
   @JoinColumn({ name: 'owned_company_Id' })
+  @AutoMap(() => Company)
   ownedCompany: Company;
 
   @ManyToOne(() => Company, (company) => company.employees, { nullable: true })
   @JoinColumn({ name: 'employing_company_Id' })
+  @AutoMap(() => Company)
   employingCompany: Company;
 
   @BeforeUpdate()

@@ -29,13 +29,17 @@ export class JwtServiceImpl implements IJwtService {
         secret: this.configService.get<string>(
           environmentConstants.environment.ACCESS_TOKEN_SECRET,
         ),
-        expiresIn: '15m',
+        expiresIn: this.configService.get<string>(
+          environmentConstants.environment.ACCESS_TOKEN_TIME_TO_LIVE,
+        ),
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.configService.get<string>(
           environmentConstants.environment.REFRESH_TOKEN_SECRET,
         ),
-        expiresIn: '7d',
+        expiresIn: this.configService.get<string>(
+          environmentConstants.environment.REFRESH_TOKEN_TIME_TO_LIVE,
+        ),
       }),
     ]);
 

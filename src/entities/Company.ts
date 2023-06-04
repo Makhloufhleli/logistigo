@@ -1,79 +1,61 @@
-import {
-  BooleanField,
-  EmailField,
-  EnumField,
-  NumberField,
-  StringField,
-} from '@app/decorators/fields.decorator';
 import { User } from '@app/entities';
 import { Invoice } from '@app/entities/Invoice';
 import { Mission } from '@app/entities/Mission';
 import { CompanyType } from '@app/enums';
 import { AbstractEntity } from '@app/shared/abstract.entity';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmptyObject, ValidateNested } from 'class-validator';
-import {
-  Column,
-  Entity,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  TableInheritance,
-} from 'typeorm';
+import { AutoMap } from '@automapper/classes';
+import { Column, Entity, OneToMany, OneToOne, TableInheritance } from 'typeorm';
 
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 export class Company extends AbstractEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
   @Column('varchar', {
     nullable: true,
   })
-  @StringField({ swagger: true, required: true, example: 'Company name' })
+  @AutoMap()
   name: string;
 
   @Column('varchar', {
     nullable: true,
   })
-  @StringField({ swagger: true, required: true, example: 'Company siret' })
+  @AutoMap()
   siret: string;
 
   @Column('boolean', {
     nullable: true,
   })
-  @BooleanField({ swagger: true, required: true, example: true })
+  @AutoMap()
   payed: boolean;
 
   @Column('varchar', {
     nullable: true,
   })
-  @StringField({ swagger: true, required: true, example: 'Company address' })
+  @AutoMap()
   address: string;
 
   @Column('varchar', {
     nullable: true,
     unique: true,
   })
-  @EmailField({ swagger: true, required: true, example: 'company@email.com' })
+  @AutoMap()
   email: string;
 
   @Column('int', {
     nullable: true,
   })
-  @NumberField({ swagger: true, required: true, example: 100 })
+  @AutoMap()
   numberOfAgents: number;
 
   @Column('double', {
     nullable: true,
   })
-  @NumberField({ swagger: true, required: true, example: 19 })
+  @AutoMap()
   tva: number;
 
   @Column('varchar', {
     nullable: true,
   })
-  @StringField({ swagger: true, required: true, example: 'Company logo' })
+  @AutoMap()
   logo: string;
 
   @Column({
@@ -81,36 +63,29 @@ export class Company extends AbstractEntity {
     enum: CompanyType,
     type: 'enum',
   })
-  @EnumField(() => CompanyType, {
-    swagger: true,
-    required: true,
-    examples: CompanyType,
-    example: CompanyType.SMALL_BUSINESS,
-  })
+  @AutoMap()
   type: CompanyType;
 
   @Column('varchar', {
     nullable: true,
   })
-  @StringField({ swagger: true, required: true, example: 'Company business nature' })
+  @AutoMap()
   natureOfBusiness: string;
 
   @Column('varchar', {
     nullable: true,
   })
-  @StringField({ swagger: true, required: true, example: 'Company optimization target' })
+  @AutoMap()
   optimizationTarget: string;
 
   @Column('double', {
     nullable: true,
   })
-  @NumberField({ swagger: true, required: true, example: 1000 })
+  @AutoMap()
   capital: number;
 
   @OneToOne(() => User, (user) => user.ownedCompany, { nullable: true, cascade: true })
-  @ValidateNested({ each: true })
-  @ApiProperty({ type: () => User })
-  @IsNotEmptyObject({ nullable: false })
+  @AutoMap(() => User)
   owner: User;
 
   @OneToMany(() => User, (user) => user.employingCompany)
