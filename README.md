@@ -1,5 +1,5 @@
-# Rest-Api-Nestjs-Typeorm
-This is a rest api with nodejs FrameWork nestjs using typeorm and mysql database
+# Logistigo
+This is a rest api with Nestjs FrameWork using typeorm and mysql database.
 ## Installation
 ```bash
 $ yarn install
